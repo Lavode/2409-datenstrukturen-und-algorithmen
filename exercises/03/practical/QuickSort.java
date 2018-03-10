@@ -4,7 +4,7 @@ import java.util.Comparator;
 /**
  * File: QuickSort.java
  *
- * Implementation von Quicksort. Verwendet generische ArrayList für Eingabedaten
+ * Implementation von Quicksort. Verwendet generische ArrayList fÃ¼r Eingabedaten
  * und generischen Comparator um Datenelemente zu vergleichen. 
  */
 public class QuickSort {
