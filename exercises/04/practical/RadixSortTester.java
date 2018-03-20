@@ -42,14 +42,22 @@ public class RadixSortTester {
 		int n[] = {10000, 20000, 40000, 80000, 160000, 320000};
 		int d = 150;
 		
-		for(int i=0; i<n.length; i++)
-		{
-			char[][] testData = generateTestData(n[i], d);
-		
-			Timer t = new Timer();
-			t.reset();			
-			RadixSort.radixSort(testData, d);			
-			System.out.printf("Number of elements: %d, Time: %dms\n", n[i], t.timeElapsed());
+		// for(int i=0; i<n.length; i++)
+		// {
+		// 	char[][] testData = generateTestData(n[i], d);
+		// 
+		// 	Timer t = new Timer();
+		// 	t.reset();			
+		// 	RadixSort.radixSort(testData, d);			
+		// 	System.out.printf("Number of elements: %d, Time: %dms\n", n[i], t.timeElapsed());
+		// }
+		char[][] testData = generateTestData(10, 5);
+		RadixSort.radixSort(testData, 5);
+
+		System.out.println("\nHopefully sorted output:");
+		for (char[] word : testData) {
+			String s = new String(word);
+			System.out.println(s);
 		}
 	}
 }
