@@ -1,0 +1,31 @@
+d = 25
+Number of elements: 10000, Time: 12ms
+Number of elements: 20000, Time: 13ms
+Number of elements: 40000, Time: 29ms
+Number of elements: 80000, Time: 101ms
+Number of elements: 160000, Time: 294ms
+Number of elements: 320000, Time: 810ms
+
+d = 50
+Number of elements: 10000, Time: 19ms
+Number of elements: 20000, Time: 25ms
+Number of elements: 40000, Time: 83ms
+Number of elements: 80000, Time: 229ms
+Number of elements: 160000, Time: 733ms
+Number of elements: 320000, Time: 1797ms
+
+d = 150
+Number of elements: 10000, Time: 52ms
+Number of elements: 20000, Time: 98ms
+Number of elements: 40000, Time: 414ms
+Number of elements: 80000, Time: 1277ms
+Number of elements: 160000, Time: 3300ms
+Number of elements: 320000, Time: 7988ms
+
+d = 300
+Number of elements: 10000, Time: 103ms
+Number of elements: 20000, Time: 221ms
+Number of elements: 40000, Time: 1156ms
+Number of elements: 80000, Time: 3329ms
+Number of elements: 160000, Time: 7715ms
+Number of elements: 320000, Time: 16981ms
