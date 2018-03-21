@@ -73,7 +73,7 @@
 \newcommand{\printdate}{\today}
 
 \subject{2409 - Datenstrukturen und Algorithmen}
-\title{Series 4, Theoretical Exercises}
+\title{Series 4}
 
 \author{Michael Senn - 16-126-880}
 
@@ -235,4 +235,85 @@ cost of additional memory and processing time - by extending the sorting key by
 the position of the item in the original input list. That is, to use the item's
 original position as a 'tie-breaker' in case of items which are equal based on
 their sorting key.
+
+
+\section{Practical Part}
+
+\subsection{Runtime of provided Radix sort}
+
+The provided radix sort consists of two nested loops - the outer iterating over
+each word size between 1 and the maximum word size, the inner iterating over
+each item in the input.
+
+As such, with \texttt{d} being the number of characters of the longest word,
+and \texttt{c} being the number of words, we expect a total of $c * d/2 = 2*n$
+iterations to take place, with \texttt{n} indicating the number of characters
+total in the input. As such, complexity will be $\theta(n)$.
+
+\subsection{Adjusted Radix sort}
+
+The provided Radix sort was adjusted to first sort the input items by length
+and then, on each iteration, to only consider those input items which are long
+enough to have a character at the to-be-compared position.
+
+This prevents having to spend time handling words whose order will not be
+influenced due to lack of a character in the current column. This cuts sorting
+time of bigger inputs in half.
+
+Seen below is a test run with a small input size, showing that lexographic
+sorting still works the way it did before.
+
+\begin{verbatim}
+› javac RadixSortTester.java && java RadixSortTester
+  
+Hopefully sorted output:
+iafb
+nezx
+pqd
+pwc
+r
+rt
+tf
+uh
+w
+wqgi
+\end{verbatim}
+
+\subsection{Performance of old vs new implementation}
+\FloatBarrier
+
+Both old and new implementation were timed with various inputs. These differed
+in both the number of words to sort per input (plotted on the x-axis), as well
+as the maximum length of each word in a given input (plotted as separate data
+series each).
+
+Clearly the new implementation is marginally slower for small data sets, due to
+having to sort the input first. However, for inputs with either longer words,
+or more items, it performs up to twice as fast as the original implementation.
+
+It should be noted that, while any of the given data series seems to be growing
+sligthly faster than linearly with increasing input size, the difference
+between linear and actual growth is going down as input size increases. Given
+that this is the case for both the old and new versions of Radix-sort, this is
+likely not linked to the changes made to the algorithm.
+
+Hence it should be safe to assume that - as intended - execution time grows
+linearly with the number of characters total in the input.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \caption{Runtime of old Radix-Sort}
+      \includegraphics[width=\linewidth]{resources/runtime_old_sort.png}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \caption{Runtime of new Radix-Sort}
+      \includegraphics[width=\linewidth]{resources/runtime_new_sort.png}
+    \end{subfigure}
+\end{figure}
+
+\FloatBarrier
+
 \end{document}
