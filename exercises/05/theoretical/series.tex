@@ -87,41 +87,41 @@
 \begin{document}
 \maketitle
 
-\section{Reverse a queue}
+\section{Reversing a linked list}
 
 The following method - shown in the (fictious) environment of a \texttt{LinkedList}
 class - will reverse the list.
 
 \begin{lstlisting}[language=ruby]
-    class Node
-        def next
-            # ...
-        end
-
-        def next=(val)
-            # ...
-        end
+class Node
+    def next
+        # ...
     end
-    class LinkedList
-        def reverse
-            prev_node = nil 
-            cur_node  = @head
 
-            while next_node = cur_node.next
-                cur_node.next       = prev_node
-                prev_node, cur_node = cur_node , next_node
-            end 
-
-            cur_node.next = prev_node
-            @head         = cur_node
-        end
+    def next=(val)
+        # ...
     end
+end
+class LinkedList
+    def reverse
+        prev_node = nil 
+        cur_node  = @head
+
+        while next_node = cur_node.next
+            cur_node.next       = prev_node
+            prev_node, cur_node = cur_node , next_node
+        end 
+
+        cur_node.next = prev_node
+        @head         = cur_node
+    end
+end
 \end{lstlisting}
 
 
 % \tableofcontents
 
-\section{Queue with linked list}
+\section{Implementing a queue with a linked list}
 
 Below you will find the relevant parts of an implementation of a queue using
 linked lists, with support for constant-time enqueueing and dequeueing.
@@ -132,25 +132,25 @@ As an implementation detail the queue will - when calling \texttt{dequeue} on
 an empty queue - return \texttt{nil}, rather than throwing an exception.
 
 \begin{lstlisting}[language=ruby]
-  class Queue
+class Queue
     def enqueue(val)
-      node = Node.new(val)
+        node = Node.new(val)
 
-      @tail.next = node if @tail
-      @tail = node
-      @head = node unless @head
+        @tail.next = node if @tail
+        @tail = node
+        @head = node unless @head
     end
 
     def dequeue
-      return nil unless @head
+        return nil unless @head
 
-      ret = @head
-      @head = ret.next
-      ret.next = nil
+        ret = @head
+        @head = ret.next
+        ret.next = nil
 
-      return ret
+        return ret
     end
-  end
+end
 \end{lstlisting}
 
 \begin{lstlisting}
@@ -186,6 +186,50 @@ Queue is now: []
 
 Dequeued: nil
 Queue is now: []
+\end{lstlisting}
+
+\section{Depth-first traversal of directed LCRS tree}
+
+Following we define a method which allows to do recursive depth-first traversal
+of an LCRS-style directed tree. The method will traverse all nodes below the
+given node, including its siblings.  As such, in order to traverse the whole
+tree, the root node has to be passed.
+
+Finding the root node would have to be done outside of the traversing function,
+to prevent infinite loops. As this would be trivial - one can simply follow the
+pointers to each node's parents to the very top - it was left out.
+
+\begin{lstlisting}[language=ruby]
+def traverse(node)
+    puts node.key
+
+    traverse(node.left_child)    if node.left_child
+    traverse(node.right_sibling) if node.right_sibling
+end
+\end{lstlisting}
+
+\section{Non-recursive traversal of directed LCRS tree}
+
+Following we define a method which allows to non-recursively traverse an
+LCRS-style directed tree. It uses a stack to keep track of discovered, but
+not-yet-traversed, nodes, to come back to later if the current path was
+exhausted.
+
+Similarly to above, the root node has to be passed in in order to traverse the
+full tree.
+
+\begin{lstlisting}[language=ruby]
+def traverse(node)
+    stack = Stack.new
+    stack.push(node)
+
+    while (node = stack.pop) do
+      puts node.key
+
+      stack.push(node.left_child)    if node.left_child
+      stack.push(node.right_sibling) if node.right_sibling
+    end
+end
 \end{lstlisting}
 
 \end{document}
