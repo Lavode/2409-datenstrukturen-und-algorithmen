@@ -1,0 +1,191 @@
+\documentclass[a4paper]{scrartcl}
+%\documentclass[a4paper]{report}
+
+% Uncomment to optimize for double-sided printing.
+% \KOMAoptions{twoside}
+
+% Set binding correction manually, if known.
+% \KOMAoptions{BCOR=2cm}
+
+% Localization options
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Enhanced verbatim sections. We're mainly interested in
+% \verbatiminput though.
+\usepackage{verbatim}
+
+% PDF-compatible landscape mode.
+% Makes PDF viewers show the page rotated by 90°.
+\usepackage{pdflscape}
+
+% Advanced tables
+\usepackage{tabu}
+\usepackage{longtable}
+
+% Fancy tablerules
+\usepackage{booktabs}
+
+% Graphics
+\usepackage{graphicx}
+
+% Current time
+\usepackage[useregional=numeric]{datetime2}
+
+% Float barriers.
+% Automatically add a FloatBarrier to each \section
+\usepackage[section]{placeins}
+
+% Custom header and footer
+% \usepackage{fancyhdr}
+% \setlength{\headheight}{15.2pt}
+% \pagestyle{fancyplain}
+
+\usepackage{geometry}
+\usepackage{layout}
+
+\usepackage{subcaption}
+
+% Math tools
+\usepackage{mathtools}
+% Math symbols
+\usepackage{amsmath,amsfonts,amssymb}
+
+% \fancyhf{}
+% % Chapter header on non-plain pages only.
+% \lhead{\fancyplain{} {\leftmark}}
+% % Footer must contain print date. Ugly, but IPA requirement.
+% \lfoot{\printdate}
+% % Print date left and page count right was the thing which looked the
+% % most balanced.
+% \rfoot{\thepage}
+% 
+% Source code & highlighting
+\usepackage{listings}
+
+% Convenience commands
+\newcommand{\mailsubject}{2409 - Datenstrukturen und Algorithmen - Series 5}
+\newcommand{\maillink}[1]{\href{mailto:#1?subject=\mailsubject}
+                               {#1}}
+
+% Should use this command wherever the print date is mentioned.
+\newcommand{\printdate}{\today}
+
+\subject{2409 - Datenstrukturen und Algorithmen}
+\title{Series 5}
+
+\author{Michael Senn - 16-126-880}
+
+\date{}
+
+% Needs to be the last command in the preamble, for one reason or
+% another. 
+\usepackage{hyperref}
+
+
+\begin{document}
+\maketitle
+
+\section{Reverse a queue}
+
+The following method - shown in the (fictious) environment of a \texttt{LinkedList}
+class - will reverse the list.
+
+\begin{lstlisting}[language=ruby]
+    class Node
+        def next
+            # ...
+        end
+
+        def next=(val)
+            # ...
+        end
+    end
+    class LinkedList
+        def reverse
+            prev_node = nil 
+            cur_node  = @head
+
+            while next_node = cur_node.next
+                cur_node.next       = prev_node
+                prev_node, cur_node = cur_node , next_node
+            end 
+
+            cur_node.next = prev_node
+            @head         = cur_node
+        end
+    end
+\end{lstlisting}
+
+
+% \tableofcontents
+
+\section{Queue with linked list}
+
+Below you will find the relevant parts of an implementation of a queue using
+linked lists, with support for constant-time enqueueing and dequeueing.
+
+In addition you will find visualizations of it during operation.
+
+As an implementation detail the queue will - when calling \texttt{dequeue} on
+an empty queue - return \texttt{nil}, rather than throwing an exception.
+
+\begin{lstlisting}[language=ruby]
+  class Queue
+    def enqueue(val)
+      node = Node.new(val)
+
+      @tail.next = node if @tail
+      @tail = node
+      @head = node unless @head
+    end
+
+    def dequeue
+      return nil unless @head
+
+      ret = @head
+      @head = ret.next
+      ret.next = nil
+
+      return ret
+    end
+  end
+\end{lstlisting}
+
+\begin{lstlisting}
+Enqueueing 3
+Queue is now: [[HEAD]<3->nil>[TAIL]]
+
+Enqueueing 5
+Queue is now: [[HEAD]<3->5>, <5->nil>[TAIL]]
+
+Dequeued: 3
+Queue is now: [[HEAD]<5->nil>[TAIL]]
+
+Enqueueing 2
+Queue is now: [[HEAD]<5->2>, <2->nil>[TAIL]]
+
+Dequeued: 5
+Queue is now: [[HEAD]<2->nil>[TAIL]]
+
+Enqueueing 8
+Queue is now: [[HEAD]<2->8>, <8->nil>[TAIL]]
+
+Enqueueing 9
+Queue is now: [[HEAD]<2->8>, <8->9>, <9->nil>[TAIL]]
+
+Dequeued: 2
+Queue is now: [[HEAD]<8->9>, <9->nil>[TAIL]]
+
+Dequeued: 8
+Queue is now: [[HEAD]<9->nil>[TAIL]]
+
+Dequeued: 9
+Queue is now: []
+
+Dequeued: nil
+Queue is now: []
+\end{lstlisting}
+
+\end{document}
