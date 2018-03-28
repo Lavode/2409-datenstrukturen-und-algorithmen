@@ -223,6 +223,9 @@ public class KDTreeVisualization extends Component{
   }
 
   private TreeNode nearestNeighbour(Point point, TreeNode node, int depth) {
+	  // TODO: Nasty 120 LOC method, could use some refactoring -
+	  // especially extracting certain parts into separate methods.
+	  // TODO: Proper logging instead of commented-out printlns.
 	  int dimension = depth % 2;
 	  // 0: Left, 1: Right
 	  int direction;
