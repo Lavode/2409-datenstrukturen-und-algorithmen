@@ -1,6 +1,15 @@
 import java.awt.Component;
-import java.awt.*;
+
+import java.awt.Point;
+import java.awt.Image;
+import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.Dimension;
+import java.awt.RenderingHints;
+import java.awt.Color;
+
 import java.util.Iterator;
+import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
 
@@ -92,7 +101,43 @@ public class KDTreeVisualization extends Component{
    * starts creation of the kd-Tree
    */
   public void createKDTree(){
-	  //to be implemented
+	  System.out.println("Starting to build KD Tree");
+	  printPoints(points);
+	  kdRoot = buildKDTree(points, 0);
+  }
+
+  private void printPoints(List<Point> points) {
+	  System.out.print("[");
+	  for (Point p : points) {
+		  System.out.print("<" + p.x + ", " + p.y + ">");
+	  }
+	  System.out.println("]");
+  }
+
+  public TreeNode buildKDTree(List<Point> points, int depth) {
+	  // 0 => x, 1 => y
+	  int dimension = depth % 2;
+	  System.out.println("Dimension: " + dimension);
+	  PointComparator comp = new PointComparator(dimension);
+	  Collections.sort(points, comp);
+	  System.out.println("Sorted array:");
+	  printPoints(points);
+
+	  int median = points.size() / 2;
+
+	  if (points.size() == 0) {
+		  return null;
+	  } else {
+		  Point med = points.get(median);
+		  System.out.println("Median point: " + med.x + ", " + med.y);
+		  // subList(a, b) returns from a inclusive, to b exclusive.
+		  return new TreeNode(
+		  	med,	
+		  	buildKDTree(points.subList(0, median), depth + 1),
+		  	buildKDTree(points.subList(median + 1, points.size()), depth + 1)
+		  );
+	  }
+
   }
     
   /**
@@ -102,10 +147,30 @@ public class KDTreeVisualization extends Component{
    * @return the nearest neighbor of p
    */
   private Point listSearchNN(Point p){
-    //to be implemented
-    return p;
+	  // Arguably a tad ugly
+	  double closestDistance = Integer.MAX_VALUE;
+	  Point closest = null;
+
+	  for (Point neighbour : points) {
+		  if (neighbour == p) {
+			  continue;
+		  }
+
+		  if (closest == null) {
+			  closest = neighbour;
+			  closestDistance = p.distance(closest);
+		  }
+
+		  double neighbourDistance = p.distance(neighbour);
+		  if (neighbourDistance < closestDistance) {
+			  closest = neighbour;
+			  closestDistance = neighbourDistance;
+		  }
+	  }
+
+	  return closest;
   }
-  
+
   /**
    * searches the nearest neighbor of a point in a kd-tree
    * @param p the point for which to search
@@ -216,6 +281,20 @@ public class KDTreeVisualization extends Component{
     TreeNode(Point point)
     {
       this.position = point;
+    }
+
+    TreeNode(Point point, TreeNode left, TreeNode right) {
+      this.position = point;
+      this.left = left;
+      this.right = right;
+    }
+
+    public void setLeft(TreeNode node) {
+	    this.left = node;
+    }
+
+    public void setRight(TreeNode node) {
+	    this.right = node;
     }
   }
 }
