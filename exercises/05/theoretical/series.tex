@@ -234,6 +234,90 @@ end
 
 \section{Merging two sorted cyclic linked lists}
 
+In what follows, we describe how to merge two sorted, cyclic linked lists. To
+start with, we define an algorithm which allows to find the node with the
+smallest key within a sorted cyclic linked list.
+
+\begin{lstlisting}[language=ruby]
+def smallest(head)
+  node = head
+  while (node = node.next) && (node != head) do
+    # As the list is sorted, any drop in key value means that we've arrived
+    # at the very smallest element.
+    return node if node.key < head.key
+  end
+
+  # Either all nodes were equal, or the head was the smallest already.
+  return node
+end
+\end{lstlisting}
+
+Now, one can use the below algorithm to merge two lists, by passing in their
+smallest node each.
+
+\begin{lstlisting}[language=ruby]
+def merge(node1, node2)
+  initial_node1 = node1
+  initial_node2 = node2
+
+  node1_moved = false
+  node2_moved = false
+
+  # Placeholder node to attach new nodes to.
+  head = Node.new(nil)
+  prev = head
+
+  while true do
+    # Attach smaller of the two available nodes to the growing list.
+    if node1.key < node2.key
+      prev.next = node1
+      prev = node1
+      node1 = node1.next
+      node1_moved = true
+    else
+      prev.next = node2
+      prev = node2
+      node2 = node2.next
+      node2_moved = true
+    end
+
+    # If end of either list reached (indicated by being on the first node
+    # again), link remaining nodes of second list to output.
+    if node1 == initial_node1 && node1_moved
+      prev.next = node2
+      prev = node2
+      while node2.next != initial_node2
+        node2 = node2.next
+      end
+      # Bypass empty node at start of queue
+      node2.next = head.next
+      break
+    elsif node2 == initial_node2 && node2_moved
+      prev.next = node1
+      prev = node1
+      while node1.next != initial_node1
+        node1 = node1.next
+      end
+      # Bypass empty node at start of queue
+      node1.next = head.next
+      break
+    end
+  end
+
+  # Tail already points at node after placeholder node, so we can just return
+  # said node to cut the placeholder node out.
+  return head.next
+end
+\end{lstlisting}
+
+\subsection{Comparison with merge algorithm in book}
+
+It is unclear how an algorithm designed for merging of sorted arrays can be
+used as-is to merge sorted linked lists - a linked list offers no way of
+querying its length, or accessing a specific element by index, without
+traversing it fully. As such, using it 'directly' as stated in the exercise
+seems a fruitless task.
+
 \section{Practical part}
 
 \subsection{Runtime of linear vs tree-based nearest-neighbour search}
