@@ -134,9 +134,11 @@ public class KDTreeVisualization extends Component{
    */
   public void createKDTree(){
 	  System.out.println("Starting to build KD Tree");
+	  Timer t = new Timer();
+	  t.reset();
 	  //printPoints(points);
 	  kdRoot = buildKDTree(points, 0);
-	  System.out.println("Tree built.");
+	  System.out.printf("Tree built in %dms.\n", t.timeElapsed());
   }
 
   private void printPoints(List<Point> points) {
