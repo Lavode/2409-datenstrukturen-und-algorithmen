@@ -12,7 +12,7 @@ public class KDTreeTester extends JFrame{
   
   int w=400;    //width of the window
   int h=400;    //height of the window
-  int n= 20000;    //number of points
+  int n=50000;    //number of points
   int x=500;      //number of points to be searched (has to be smaller than n)
   KDTreeVisualization vis;  //the visualization
   
@@ -62,6 +62,14 @@ public class KDTreeTester extends JFrame{
           vis.searchNN(x, 1);
       }
     });
+
+    JMenuItem compareListAndTreeSearch = new JMenuItem("Compare List-based and Tree-based NN search");
+    compareListAndTreeSearch.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+          vis.compareNNSearches(x);
+      }
+    });
+
     JMenuItem points = new JMenuItem("Points in the list");
     points.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
@@ -85,6 +93,7 @@ public class KDTreeTester extends JFrame{
     kdMenu.add(createTree);
     searchMenu.add(listSearch);
     searchMenu.add(treeSearch);
+    searchMenu.add(compareListAndTreeSearch);
     visualizeMenu.add(points);
     visualizeMenu.add(pointList);
     visualizeMenu.add(tree);

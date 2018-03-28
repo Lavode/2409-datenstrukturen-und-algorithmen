@@ -96,6 +96,38 @@ public class KDTreeVisualization extends Component{
 	  }
 	  System.out.printf("Number of points searched: %d, Time: %dms\n", x, t.timeElapsed());
   }
+
+  public void compareNNSearches(int x) {
+	  boolean sanityTestPassed = true;
+	  Point resultListSearch;
+	  Point resultTreeSearch;
+
+	  LinkedList<Point> searchPoints = createPoints(x);
+
+	  for (Point p : searchPoints) {
+		  resultListSearch = this.listSearchNN(p);
+		  resultTreeSearch = this.treeSearchNN(p);
+
+		  boolean equalResult = resultListSearch.equals(resultTreeSearch);
+		  boolean equalDistance = p.distance(resultListSearch) == p.distance(resultTreeSearch);
+		  sanityTestPassed = sanityTestPassed && (equalResult || equalDistance);
+
+		  System.out.printf("Searched for: <%d, %d>, List search result: <%d, %d>, Tree search result: <%d, %d>\n", p.x, p.y, resultListSearch.x, resultListSearch.y, resultTreeSearch.x, resultTreeSearch.y);
+		  if (equalResult) {
+			  System.out.println("OK: Same result");
+		  } else if (equalDistance) {
+			  System.out.println("OK: Different result but same distance.");
+		  } else {
+			  System.out.println("NOK: Differing results, differing distances!");
+		  }
+	  }
+
+	  if (sanityTestPassed) {
+		  System.out.println("All queries returned same or equivalent result.");
+	  } else {
+		  System.out.println("At least one query returned a different, inferior result.");
+	  }
+  }
   
   /**
    * starts creation of the kd-Tree
@@ -140,7 +172,7 @@ public class KDTreeVisualization extends Component{
 	  }
 
   }
-    
+
   /**
    * searches the nearest neighbor of a point in a 
    * list of points
