@@ -1,0 +1,100 @@
+# n = 100000, r = 1000
+
+Starting to build KD Tree
+Tree built in 26462ms.
+
+Number of points searched: 1000, Time: 1928ms
+Number of points searched: 1000, Time: 1894ms
+Number of points searched: 1000, Time: 1900ms
+Number of points searched: 1000, Time: 1905ms
+Number of points searched: 1000, Time: 1929ms
+
+Number of points searched: 1000, Time: 5ms
+Number of points searched: 1000, Time: 6ms
+Number of points searched: 1000, Time: 4ms
+Number of points searched: 1000, Time: 4ms
+Number of points searched: 1000, Time: 7ms
+
+# n = 50000, r = 1000
+
+Starting to build KD Tree
+Tree built in 7221ms.
+
+Number of points searched: 1000, Time: 512ms
+Number of points searched: 1000, Time: 531ms
+Number of points searched: 1000, Time: 500ms
+Number of points searched: 1000, Time: 498ms
+Number of points searched: 1000, Time: 498ms
+
+Number of points searched: 1000, Time: 6ms
+Number of points searched: 1000, Time: 3ms
+Number of points searched: 1000, Time: 3ms
+Number of points searched: 1000, Time: 4ms
+Number of points searched: 1000, Time: 3ms
+
+# n = 25000, r = 1000
+
+Starting to build KD Tree
+Tree built in 2119ms.
+
+Number of points searched: 1000, Time: 266ms
+Number of points searched: 1000, Time: 254ms
+Number of points searched: 1000, Time: 253ms
+Number of points searched: 1000, Time: 254ms
+Number of points searched: 1000, Time: 254ms
+
+Number of points searched: 1000, Time: 3ms
+Number of points searched: 1000, Time: 4ms
+Number of points searched: 1000, Time: 3ms
+Number of points searched: 1000, Time: 3ms
+Number of points searched: 1000, Time: 4ms
+
+# n = 10000, r = 500
+
+Tree built in 306ms.
+
+Number of points searched: 1000, Time: 115ms
+Number of points searched: 1000, Time: 105ms
+Number of points searched: 1000, Time: 104ms
+Number of points searched: 1000, Time: 136ms
+Number of points searched: 1000, Time: 138ms
+
+Number of points searched: 1000, Time: 5ms
+Number of points searched: 1000, Time: 3ms
+Number of points searched: 1000, Time: 3ms
+Number of points searched: 1000, Time: 3ms
+Number of points searched: 1000, Time: 3ms
+
+# n = 2500, r = 1000
+
+Starting to build KD Tree
+Tree built in 38ms.
+
+Number of points searched: 1000, Time: 43ms
+Number of points searched: 1000, Time: 30ms
+Number of points searched: 1000, Time: 61ms
+Number of points searched: 1000, Time: 61ms
+Number of points searched: 1000, Time: 27ms
+
+Number of points searched: 1000, Time: 7ms
+Number of points searched: 1000, Time: 2ms
+Number of points searched: 1000, Time: 2ms
+Number of points searched: 1000, Time: 2ms
+Number of points searched: 1000, Time: 2ms
+
+# n = 1000, r = 1000
+
+Starting to build KD Tree
+Tree built in 17ms.
+
+Number of points searched: 1000, Time: 23ms
+Number of points searched: 1000, Time: 13ms
+Number of points searched: 1000, Time: 40ms
+Number of points searched: 1000, Time: 13ms
+Number of points searched: 1000, Time: 14ms
+
+Number of points searched: 1000, Time: 5ms
+Number of points searched: 1000, Time: 3ms
+Number of points searched: 1000, Time: 2ms
+Number of points searched: 1000, Time: 2ms
+Number of points searched: 1000, Time: 2ms

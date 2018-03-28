@@ -232,4 +232,70 @@ def traverse(node)
 end
 \end{lstlisting}
 
+\section{Merging two sorted cyclic linked lists}
+
+\section{Practical part}
+
+\subsection{Runtime of linear vs tree-based nearest-neighbour search}
+
+In order to test performance of the linear and tree-based nearest-neighbour
+searches, various measurements were taken. For data sets with 1000 to 100000
+nodes, five measurements were taken each. Each measurement consisted of
+generating 1000 random points, then looking up their nearest neighbour via
+linear- and tree-based search. The average measurement per algorithm and size
+of dataset is visualized below.
+
+\subsubsection{Linear search}
+
+As expected, runtime of linear search grew roughly linearly with the number of
+nodes to search. Interestingly enough the measurement with 100000 nodes
+resulted in a significantly higher than expected execution time - an
+irregularity which persisted across multiple retries.
+
+The exact cause of this remains unknown - given the trivial algorithm used by
+linear search, it seems unlikely to be related to the implementation directly.
+
+\subsubsection{Tree-based search}
+
+Tree-based search outperformed linear search by orders of magnitude - from a
+tenfold reduction in execution time for input sizes of 1000 nodes, to 400-fold
+reductions with input sizes of 100000.
+
+Due to being extremely fast even for huge inputs, the natural variance of the
+measurements makes it hard to judge future growth. However, it would seem that
+its growth does slow down as input size increases, hinting at the desired
+behaviour of $O(log(n))$.
+
+\subsubsection{Performance of the KD tree initialization}
+
+Lastly we looked at the time it took to initialize the K-D tree. Judging by
+measurements, the naive implementation of sorting each subtree anew lead to
+growth which is considerably faster than linear. For input sizes approaching
+100000, generation of the tree took up to 25s.
+
+It is likely that this could be improved vastly by presorting the list of nodes
+twice - once by x, and once by y coordinate - and then using the respective list
+within the recursions. 
+
+It should also be noted that the current implementation of the tree used up
+considerable amounts of memory - up to 940MB for 100000 elements.
+
+\begin{figure}
+	\centering
+	\caption{Runtime of linear search}
+	\includegraphics[width=\linewidth]{resources/search_time_list.png}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\caption{Runtime of tree-based search}
+	\includegraphics[width=\linewidth]{resources/search_time_tree.png}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\caption{Build-time of KD tree}
+	\includegraphics[width=\linewidth]{resources/build_time_tree.png}
+\end{figure}
+
 \end{document}
