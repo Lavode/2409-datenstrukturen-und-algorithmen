@@ -102,8 +102,9 @@ public class KDTreeVisualization extends Component{
    */
   public void createKDTree(){
 	  System.out.println("Starting to build KD Tree");
-	  printPoints(points);
+	  //printPoints(points);
 	  kdRoot = buildKDTree(points, 0);
+	  System.out.println("Tree built.");
   }
 
   private void printPoints(List<Point> points) {
@@ -117,11 +118,11 @@ public class KDTreeVisualization extends Component{
   public TreeNode buildKDTree(List<Point> points, int depth) {
 	  // 0 => x, 1 => y
 	  int dimension = depth % 2;
-	  System.out.println("Dimension: " + dimension);
+	  //System.out.println("Dimension: " + dimension);
 	  PointComparator comp = new PointComparator(dimension);
 	  Collections.sort(points, comp);
-	  System.out.println("Sorted array:");
-	  printPoints(points);
+	  //System.out.println("Sorted array:");
+	  //printPoints(points);
 
 	  int median = points.size() / 2;
 
@@ -129,7 +130,7 @@ public class KDTreeVisualization extends Component{
 		  return null;
 	  } else {
 		  Point med = points.get(median);
-		  System.out.println("Median point: " + med.x + ", " + med.y);
+		  //System.out.println("Median point: " + med.x + ", " + med.y);
 		  // subList(a, b) returns from a inclusive, to b exclusive.
 		  return new TreeNode(
 		  	med,	
@@ -177,8 +178,136 @@ public class KDTreeVisualization extends Component{
    * @return the nearest neighbor of p
    */
   private Point treeSearchNN(Point p){
-    //to be implemented
-    return p;
+	  //System.out.println("-----");
+	  //System.out.println("Searching for NN of: <" + p.x + ", " + p.y + ">");
+	  //printPoints(points);
+	  TreeNode nn = nearestNeighbour(p, kdRoot, 0);
+	  Point position = nn.getPosition();
+	  //System.out.println("Got NN: <" + position.x + ", " + position.y + ">");
+	  //System.out.println("-----");
+	  return position;
+  }
+
+  private TreeNode nearestNeighbour(Point point, TreeNode node, int depth) {
+	  int dimension = depth % 2;
+	  // 0: Left, 1: Right
+	  int direction;
+	  TreeNode currentBest;
+	  double currentBestDistance;
+	  boolean checkOtherSubtree = false;
+
+	  //System.out.println("Examining point: <" + node.getPosition().x + ", " + node.getPosition().y + ">");
+
+	  // Decide which path to take while descending the subtree.
+	  if (dimension == 0) {
+		  // X-axis
+		  if (point.x > node.getPosition().x) {
+			  // Traverse right part
+			  direction = 1;
+		  } else {
+			  // Traverse left part
+			  direction = 0;
+		  }
+	  } else {
+		  // Y-axis
+		  if (point.y > node.getPosition().y) {
+			  // Traverse right part
+			  direction = 1;
+		  } else {
+			  // Traverse left part
+			  direction = 0;
+		  }
+	  }
+
+	  // Descend into the subtree with points closer to us.
+	  if (direction == 0) {
+		  //System.out.println("Going left");
+		  if (node.getLeft() == null) {
+			  //System.out.println("Reached leaf node, setting as current best.");
+			  currentBest = node;
+		  } else {
+			  //System.out.println("Recursing deeper...");
+			  currentBest = nearestNeighbour(point, node.getLeft(), depth + 1);
+		  }
+	  } else {
+		  //System.out.println("Going right");
+		  if (node.getRight() == null) {
+			  //System.out.println("Reached leaf node, setting as current best.");
+			  currentBest = node;
+		  } else {
+			  //System.out.println("Recursing deeper...");
+			  currentBest = nearestNeighbour(point, node.getRight(), depth + 1);
+		  }
+	  }
+
+
+	  currentBestDistance = point.distance(currentBest.getPosition());
+	  // Replace nearest-neighbour estimate with current node if closer.
+	  //System.out.println("Examining point: <" + node.getPosition().x + ", " + node.getPosition().y + ">");
+	  if (point.distance(node.getPosition()) < currentBestDistance) {
+		  //System.out.println("Is closer than previous current best, setting current best to it.");
+		  currentBest = node;
+		  currentBestDistance = point.distance(currentBest.getPosition());
+	  } else {
+		  //System.out.println("Is farther than current best, ignoring.");
+	  }
+
+
+	  // Check if other subtree might contain closer results.
+	  //System.out.println("Checking if other subtree might contain closer points.");
+	  if (dimension == 0) {
+		  //System.out.println("Checking difference on X axis");
+		  if (Math.abs(point.x - node.getPosition().x) < currentBestDistance) {
+			  //System.out.println("Might be closer results in there, recursing down subtree.");
+			  checkOtherSubtree = true;
+		  } else {
+			  //System.out.println("Split plane too far away, ignoring.");
+		  }
+	  } else {
+		  //System.out.println("Checking difference on Y axis");
+		  if (Math.abs(point.y - node.getPosition().y) < currentBestDistance) {
+			  //System.out.println("Might be closer results in there, recursing down subtree.");
+			  checkOtherSubtree = true;
+		  } else {
+			  //System.out.println("Split plane too far away, ignoring.");
+		  }
+	  }
+
+	  if (checkOtherSubtree) {
+		  TreeNode bestWithinSubtree = null;
+		  if (direction == 0) {
+			  // We've checked the left subtree previously, check the right one now.
+			  //System.out.println("Checking right subtree.");
+			  if (node.getRight() != null) {
+				  //System.out.println("Down we go. :)");
+				  bestWithinSubtree = nearestNeighbour(point, node.getRight(), depth + 1);
+			  } else {
+				  //System.out.println("Subtree empty, ignoring.");
+			  }
+		  } else {
+			  // We've checked the right subtree previously, check the left one now.
+			  //System.out.println("Checking left subtree.");
+			  if (node.getLeft() != null) {
+				  //System.out.println("Down we go. :)");
+				  bestWithinSubtree = nearestNeighbour(point, node.getLeft(), depth + 1);
+			  } else {
+				  //System.out.println("Subtree empty, ignoring.");
+			  }
+		  }
+
+		  if (bestWithinSubtree != null) {
+			  double bestWithinSubtreeDistance = point.distance(bestWithinSubtree.getPosition());
+			  if (bestWithinSubtreeDistance < currentBestDistance) {
+				  //System.out.println("Found closer neighbour within other subtree, setting as new current best.");
+				  currentBest = bestWithinSubtree;
+				  currentBestDistance = bestWithinSubtreeDistance;
+			  } else {
+				  //System.out.println("Didn't find closer neighbour within other subtree, ignoring.");
+			  }
+		  }
+	  }
+
+	  return currentBest;
   }
   
   /**
@@ -289,8 +418,20 @@ public class KDTreeVisualization extends Component{
       this.right = right;
     }
 
+    public Point getPosition() {
+	    return this.position;
+    }
+
+    public TreeNode getLeft() {
+	    return this.left;
+    }
+
     public void setLeft(TreeNode node) {
 	    this.left = node;
+    }
+
+    public TreeNode getRight() {
+	    return this.right;
     }
 
     public void setRight(TreeNode node) {
