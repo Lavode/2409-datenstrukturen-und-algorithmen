@@ -12,8 +12,8 @@ public class KDTreeTester extends JFrame{
   
   int w=400;    //width of the window
   int h=400;    //height of the window
-  int n= 20;    //number of points
-  int x=5;      //number of points to be searched (has to be smaller than n)
+  int n= 20000;    //number of points
+  int x=500;      //number of points to be searched (has to be smaller than n)
   KDTreeVisualization vis;  //the visualization
   
   public KDTreeTester(){
