@@ -65,6 +65,7 @@
 \usepackage{listings}
 
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
 
 % Convenience commands
 \newcommand{\mailsubject}{2409 - Datenstrukturen und Algorithmen - Series 6}
@@ -195,7 +196,6 @@ Final layout is:
 	8 & 7 \\
 	9 & 19 \\
 	10 & \\
-	11 & \\
 	\hline
 \end{tabular}
 
@@ -239,7 +239,6 @@ Final layout is:
 	8 & 19 \\
 	9 & \\
 	10 & 7 \\
-	11 & \\
 	\hline
 \end{tabular}
 
@@ -286,8 +285,65 @@ Final layout is:
 	8 & 19 \\
 	9 & 33 \\
 	10 & \\
-	11 & \\
 	\hline
 \end{tabular}
+
+\section{Influence of probing algorithm on lookup performance}
+
+Average hash lookup time depends on the layout of values within the hash table
+- that is, the usage pattern. This follows from the fact that a hash lookup has
+to follow the chain, starting with h(k, 0) up to h(k, n), until it finds either
+an unoccupied field, or the desired value.
+
+Hence, if we can show that a given probing algorithm does not influence the
+usage pattern, we can show that it will also not influence average lookup time.
+Similarly, if a probing algorithm does influence the usage pattern, it will
+influence average lookup times.
+
+\subsection{Linear probing}
+
+With linear probing, $h(k, i) = (h'(k) + i) \mod m$. As such, if a space is
+occupied, the next free occupied space (modulo m) will be used. Therefore it is
+clear, that the order of values in the input vector does not influence the
+usage pattern - and hence does also not influence the average lookup time.
+
+\subsection{Quadratic probing}
+
+We will show - using the $c_1, c_2$ from above, and a vector of four values -
+that the resulting hash usage pattern is not equal for all permutations of
+the input vector.
+
+This is due to the fact that, if insertion has to move to the next element of
+the chain, the difference between the attempted and the next position depends
+on the value of $i$ - that is, the number of failed insertion attempts.  In
+other words, given $h(k_1, i_1) = x = h(k_2, i_2)$, $h(k_1, i_1 + 1) = h(k_2,
+i_2 + i)$ will only hold if $i_1 = i_2$, or for specific values of $c_1$ and
+$c_2$.
+
+\subsubsection{Example of quadratic probing influencing usage pattern}
+
+Let our input vector be $v_1 = (13, 24, 2, 5)$, and $v_2 = (5, 13, 24, 2)$ one
+of its permutations. The resulting hash table for $v_1$ will be:
+
+\[
+	(nil, nil, 13, nil, nil, 2, 24, nil, nil, 5, nil)
+\]
+
+Average lookup cost with this pattern will be $(1 + 2 + 3 + 2) / 4 = 2$.
+\\
+
+For $v_2$ the hash table will be:
+
+\[
+	(nil, nil, 13, nil, nil, 5, 24, nil, nil, nil, 2)
+\]
+
+Average lookup cost with this pattern will be $(1 + 1 + 2 + 3) / 4 = 1.5$.
+\\
+
+Clearly, quadratic probing - due to influencing the hash usage pattern - will
+cause average lookup cost to vary, depending on the order of values it inserts.
+
+. Clearly hash usage will vary depending 
 
 \end{document}
