@@ -1,0 +1,293 @@
+\documentclass[a4paper]{scrartcl}
+%\documentclass[a4paper]{report}
+
+% Uncomment to optimize for double-sided printing.
+% \KOMAoptions{twoside}
+
+% Set binding correction manually, if known.
+% \KOMAoptions{BCOR=2cm}
+
+% Localization options
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Enhanced verbatim sections. We're mainly interested in
+% \verbatiminput though.
+\usepackage{verbatim}
+
+% PDF-compatible landscape mode.
+% Makes PDF viewers show the page rotated by 90°.
+\usepackage{pdflscape}
+
+% Advanced tables
+\usepackage{tabu}
+\usepackage{longtable}
+
+% Fancy tablerules
+\usepackage{booktabs}
+
+% Graphics
+\usepackage{graphicx}
+
+% Current time
+\usepackage[useregional=numeric]{datetime2}
+
+% Float barriers.
+% Automatically add a FloatBarrier to each \section
+\usepackage[section]{placeins}
+
+% Custom header and footer
+% \usepackage{fancyhdr}
+% \setlength{\headheight}{15.2pt}
+% \pagestyle{fancyplain}
+
+\usepackage{geometry}
+\usepackage{layout}
+
+\usepackage{subcaption}
+
+% Math tools
+\usepackage{mathtools}
+% Math symbols
+\usepackage{amsmath,amsfonts,amssymb}
+
+% \fancyhf{}
+% % Chapter header on non-plain pages only.
+% \lhead{\fancyplain{} {\leftmark}}
+% % Footer must contain print date. Ugly, but IPA requirement.
+% \lfoot{\printdate}
+% % Print date left and page count right was the thing which looked the
+% % most balanced.
+% \rfoot{\thepage}
+% 
+% Source code & highlighting
+\usepackage{listings}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+% Convenience commands
+\newcommand{\mailsubject}{2409 - Datenstrukturen und Algorithmen - Series 6}
+\newcommand{\maillink}[1]{\href{mailto:#1?subject=\mailsubject}
+                               {#1}}
+
+% Should use this command wherever the print date is mentioned.
+\newcommand{\printdate}{\today}
+
+\subject{2409 - Datenstrukturen und Algorithmen}
+\title{Series 6}
+
+\author{Michael Senn - 16-126-880}
+
+\date{}
+
+% Needs to be the last command in the preamble, for one reason or
+% another. 
+\usepackage{hyperref}
+
+
+\begin{document}
+\maketitle
+
+\section{Manual hash functions}
+
+Using the given hash function
+
+\[
+	h(k) = \floor*{m * \left( k * \frac{\left( \sqrt(5) - 1 \right)}{1} \mod 1 \right)}
+\]
+
+with a hash table size $m = 500$ leads to the following hashed values.
+\\
+
+\begin{tabular}{|c|c|}
+	\hline
+	Key & $h(k)$ \\
+	\hline
+	41 & 169 \\
+	42 & 478 \\
+	43 & 287 \\
+	44 & 96 \\
+	45 & 405 \\
+	\hline
+\end{tabular}
+
+\section{Collsion handling with chaining: Sort items in list}
+
+For the following parts we assume each list's items to be sorted in ascending
+order based on the items' key.
+
+\subsection{Successful search}
+
+Performance of a successful search is not influenced, since - in order to find
+the existing item - one still has to traverse all items up to the matching
+item.
+
+\subsection{Failed search}
+
+Average-case performance of a failed search is improved since, if the key of
+the currently examined item is greater than the key of the item we are looking
+for, we can conclude that the key we are looking for is not stored within the
+hash table.
+
+On average, this will lower execution time to 50\%.
+
+\subsection{Insert}
+
+Performance of insertion will be lowered since, rather than being able to
+insert the new item at the head of the list - which would be doable in constant
+time - it will have to be inserted at the appropriate place within the list,
+performance of which will depend on the filling factor of the hash table.
+
+\subsection{Delete}
+
+Performance of deletion is not influenced as - independent of the position of
+the to-be-deleted item within the list - it can be deleted by connecting its
+successor and predecessor with each other.
+
+\section{Manual hash table insertion}
+
+Using $h'(k) = k \mod m$, with $m = 11$ the size of the hash table, inserting
+the keys following keys: $[24, 18, 13, 56, 44, 7, 19, 23, 33]$.
+
+\subsection{Linear probing}
+
+Hashing operations which took place to find each key's position are:
+
+\begin{lstlisting}
+	h(24, 0) => 2
+	h(18, 0) => 7
+	h(13, 0) => 2 // Conflict
+	h(13, 1) => 3
+	h(56, 0) => 1
+	h(44, 0) => 0
+	h(7, 0) => 7 // Conflict
+	h(7, 1) => 8
+	h(19, 0) => 8 // Conflict
+	h(19, 1) => 9
+	h(23, 0) => 1 // Conflict
+	h(23, 1) => 2 // Conflict
+	h(23, 2) => 3 // Conflict
+	h(23, 3) => 4
+	h(33, 0) => 0 // Conflict
+	h(33, 1) => 1 // Conflict
+	h(33, 2) => 2 // Conflict
+	h(33, 3) => 3 // Conflict
+	h(33, 4) => 4 // Conflict
+	h(33, 5) => 5
+\end{lstlisting}
+
+
+Final layout is:
+
+\begin{tabular}{|c|c|}
+	\hline
+	Table Index & Key \\
+	\hline
+	0 & 44 \\
+	1 & 56 \\
+	2 & 24 \\
+	3 & 13 \\
+	4 & 23 \\
+	5 & 33 \\
+	6 & \\
+	7 & 18 \\
+	8 & 7 \\
+	9 & 19 \\
+	10 & \\
+	11 & \\
+	\hline
+\end{tabular}
+
+\subsection{Quadratic probing}
+
+Using $c_1 = 1$ and $c_3 = 3$.
+
+Hashing operations which took place to find each key's position are:
+
+\begin{lstlisting}
+	h(24, 0) => 2
+	h(18, 0) => 7
+	h(13, 0) => 2 // Conflict
+	h(13, 1) => 6
+	h(56, 0) => 1
+	h(44, 0) => 0
+	h(7, 0) =>  7 // Conflict
+	h(7, 1) => 0 // Conflict
+	h(7, 2) => 10
+	h(19, 0) => 8
+	h(23, 0) => 1 // Conflict
+	h(23, 1) => 5
+	h(33, 0) => 0 // Conflict
+	h(33, 1) => 4
+\end{lstlisting}
+
+Final layout is:
+
+\begin{tabular}{|c|c|}
+	\hline
+	Table Index & Key \\
+	\hline
+	0 & 44 \\
+	1 & 56 \\
+	2 & 24 \\
+	3 & \\
+	4 & 33 \\
+	5 & 23 \\
+	6 & 13 \\
+	7 & 18 \\
+	8 & 19 \\
+	9 & \\
+	10 & 7 \\
+	11 & \\
+	\hline
+\end{tabular}
+
+\subsection{Double hashing}
+
+Using $h_2(k) = 1 + (k \mod (m - 1))$.
+
+Hashing operations which took place to find each key's position are:
+
+\begin{lstlisting}
+	h(24, 0) => 2
+	h(18, 0) => 7
+	h(13, 0) => 2 // Conflict
+	h(13, 1) => 6
+	h(56, 0) => 1
+	h(44, 0) => 0
+	h(7, 0) =>  7 // Conflict
+	h(7, 1) =>  4
+	h(19, 0) => 8
+	h(23, 0) => 1 // Conflict
+	h(23, 1) => 5
+	h(33, 0) => 0 // Conflict
+	h(33, 1) => 4 // Conflict
+	h(33, 2) => 8 // Conflict
+	h(33, 3) => 1 // Conflict
+	h(33, 4) => 5 // Conflict
+	h(33, 5) => 9
+\end{lstlisting}
+
+Final layout is:
+
+\begin{tabular}{|c|c|}
+	\hline
+	Table Index & Key \\
+	\hline
+	0 & 44 \\
+	1 & 56 \\
+	2 & 24 \\
+	3 & \\
+	4 & 7 \\
+	5 & 23 \\
+	6 & 13 \\
+	7 & 18 \\
+	8 & 19 \\
+	9 & 33 \\
+	10 & \\
+	11 & \\
+	\hline
+\end{tabular}
+
+\end{document}
