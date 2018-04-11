@@ -1,0 +1,44 @@
+balls=100 table=10
+0.04ms
+balls=100 table=20
+0.04ms
+balls=100 table=40
+0.07ms
+balls=100 table=80
+0.13ms
+balls=100 table=160
+0.43ms
+balls=100 table=320
+1.36ms
+balls=100 table=640
+4.9ms
+
+balls=1000 table=10
+0.69ms
+balls=1000 table=20
+0.46ms
+balls=1000 table=40
+0.39
+balls=1000 table=80
+0.36
+balls=1000 table=160
+0.68
+balls=1000 table=320
+1.62
+balls=1000 table=640
+4.21
+
+balls=10000 table=10
+66.64
+balls=10000 table=20
+22.29
+balls=10000 table=40
+8.19
+balls=10000 table=80
+5.75
+balls=10000 table=160
+8.61
+balls=10000 table=320
+7.9
+balls=10000 table=640
+12.19
