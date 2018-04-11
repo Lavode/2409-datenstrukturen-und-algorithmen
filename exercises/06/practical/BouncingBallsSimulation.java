@@ -7,6 +7,8 @@ import java.util.*;
  */
 public class BouncingBallsSimulation extends Component implements Runnable {
 
+	final int HASH_TABLE_SIZE = 100;
+
 	LinkedList<Ball> balls;	// List of balls.
 	Image img;				// Image to display balls.
 	int w, h;				// Width an height of image.
@@ -90,13 +92,16 @@ public class BouncingBallsSimulation extends Component implements Runnable {
 		int c = 0;
 		Timer timer = new Timer();
 		timer.reset();
-		
+
 		// Loop forever (or until the user closes the main window).
 		while(true)
 		{
-			// Run one simulation step.
+		// Generate fresh 'hash table'. (More like smart usage of a
+		// three-dimensional array.)
+		LinkedList<Ball>[][] hashTable = generateHashTable(balls.iterator());
+
+		// Run one simulation step.
         	Iterator<Ball> it = balls.iterator();
-        	
         	// Iterate over all balls.
         	while(it.hasNext())
         	{
@@ -115,15 +120,16 @@ public class BouncingBallsSimulation extends Component implements Runnable {
 	        	if(ball.doesCollide(0.f,0.f,0.f,1.f))
 	        		ball.resolveCollision(0.f,0.f,0.f,1.f);
         		
-	        	// Handle collisions with other balls.
-        		Iterator<Ball> it2 = balls.iterator();
-        		Ball ball2 = it2.next();
-        		while(ball2 != ball)
-        		{
-        			if(ball.doesCollide(ball2))
-        				ball.resolveCollision(ball2);
-        			ball2 = it2.next();
-        		}
+			handleCollision(ball, hashTable);
+	        	// // Handle collisions with other balls.
+        		// Iterator<Ball> it2 = balls.iterator();
+        		// Ball ball2 = it2.next();
+        		// while(ball2 != ball)
+        		// {
+        		// 	if(ball.doesCollide(ball2))
+        		// 		ball.resolveCollision(ball2);
+        		// 	ball2 = it2.next();
+        		// }
         	}
         	
         	// Trigger update of display.
@@ -140,4 +146,72 @@ public class BouncingBallsSimulation extends Component implements Runnable {
 		}
 	}
 
+	private void handleCollision(Ball ball, LinkedList<Ball>[][] hashTable) {
+		int offsetX = hashTableXOffset(ball);
+		int offsetY = hashTableYOffset(ball);
+
+		ArrayList<Integer[]> neighbouringFields = getNeighbouringFields(offsetX, offsetY);
+
+		//System.out.printf("Offset: x = %d, y = %d\n", offsetX, offsetY);
+		for (Integer[] neighbourCoordinate : neighbouringFields) {
+			//System.out.printf("Neighbour: x = %d, y = %d\n", neighbour[0], neighbour[1]);
+			int neighbourX = neighbourCoordinate[0];
+			int neighbourY = neighbourCoordinate[1];
+			for (Ball neighbour : hashTable[neighbourX][neighbourY]) {
+				if (ball != neighbour) {
+					if (ball.doesCollide(neighbour)) {
+						ball.resolveCollision(neighbour);
+					}
+				}
+			}
+		}
+	}
+
+	/** 
+	 * Returns list of field's neighbours in hash-table - excluding field itself. 
+	 */
+	private ArrayList<Integer[]> getNeighbouringFields(int offsetX, int offsetY) {
+		ArrayList<Integer[]> out = new ArrayList<Integer[]>();
+
+		for (int x = offsetX - 1; x <= offsetX + 1; x++) {
+			for (int y = offsetY - 1; y <= offsetY + 1; y++) {
+				if (!(x < 0 || x > HASH_TABLE_SIZE || y < 0 || y > HASH_TABLE_SIZE || (x == offsetX && y == offsetY))) {
+					out.add(new Integer[]{ x, y });
+				}
+			}
+		}
+
+		return out;
+	}
+
+	private LinkedList<Ball>[][] generateHashTable(Iterator<Ball> it) {
+		// Our scaling below will return indices in [0, HASH_TABLE_SIZE]
+		LinkedList<Ball>[][] hashTable = (LinkedList<Ball>[][])new LinkedList[HASH_TABLE_SIZE + 1][HASH_TABLE_SIZE + 1];
+		Ball ball;
+
+		for (int i = 0; i <= HASH_TABLE_SIZE; i++) {
+			for (int j = 0; j <= HASH_TABLE_SIZE; j++) {
+				hashTable[i][j] = new LinkedList<Ball>();
+			}
+		}
+		// System.out.printf("Hash size: %d, width: %d, height: %d\n", HASH_TABLE_SIZE, w, h);
+		while (it.hasNext()) {
+			ball = it.next();
+
+			int offsetX = hashTableXOffset(ball);
+			int offsetY = hashTableYOffset(ball);
+			// System.out.printf("Ball: x: %f, y: %f, Offset X: %d, Offset Y: %d\n", ball.x, ball.y, offsetX, offsetY);
+			hashTable[offsetX][offsetY].add(ball);
+		}
+
+		return hashTable;
+	}
+
+	private int hashTableXOffset(Ball ball) {
+		return (int)Math.floor((ball.x * HASH_TABLE_SIZE) / w);
+	}
+
+	private int hashTableYOffset(Ball ball) {
+		return (int)Math.floor((ball.y * HASH_TABLE_SIZE) / h);
+	}
 }
