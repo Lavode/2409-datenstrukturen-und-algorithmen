@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class BouncingBallsSimulation extends Component implements Runnable {
 
-	final int HASH_TABLE_SIZE = 100;
+	final int HASH_TABLE_SIZE = 50;
 
 	LinkedList<Ball> balls;	// List of balls.
 	Image img;				// Image to display balls.
@@ -94,54 +94,53 @@ public class BouncingBallsSimulation extends Component implements Runnable {
 		timer.reset();
 
 		// Loop forever (or until the user closes the main window).
-		while(true)
-		{
-		// Generate fresh 'hash table'. (More like smart usage of a
-		// three-dimensional array.)
-		LinkedList<Ball>[][] hashTable = generateHashTable(balls.iterator());
+		while(true) {
+			// Run one simulation step.
+			Iterator<Ball> it = balls.iterator();
+			// Iterate over all balls.
+			while(it.hasNext()) {
+				Ball ball = it.next();
 
-		// Run one simulation step.
-        	Iterator<Ball> it = balls.iterator();
-        	// Iterate over all balls.
-        	while(it.hasNext())
-        	{
-        		Ball ball = it.next();
-        		
-        		// Move the ball.
-        		ball.move();
-	        	
-        		// Handle collisions with boundaries.
-	        	if(ball.doesCollide((float)w,0.f,-1.f,0.f))
-	        		ball.resolveCollision((float)w,0.f,-1.f,0.f);	       
-	        	if(ball.doesCollide(0.f,0.f,1.f,0.f))
-	        		ball.resolveCollision(0.f,0.f,1.f,0.f);	        	
-	        	if(ball.doesCollide(0.f,(float)h,0.f,-1.f))
-	        		ball.resolveCollision(0.f,(float)h,0.f,-1.f);	        	
-	        	if(ball.doesCollide(0.f,0.f,0.f,1.f))
-	        		ball.resolveCollision(0.f,0.f,0.f,1.f);
-        		
-			handleCollision(ball, hashTable);
-	        	// // Handle collisions with other balls.
-        		// Iterator<Ball> it2 = balls.iterator();
-        		// Ball ball2 = it2.next();
-        		// while(ball2 != ball)
-        		// {
-        		// 	if(ball.doesCollide(ball2))
-        		// 		ball.resolveCollision(ball2);
-        		// 	ball2 = it2.next();
-        		// }
-        	}
-        	
-        	// Trigger update of display.
+				// Move the ball.
+				ball.move();
+
+				// Handle collisions with boundaries.
+				if(ball.doesCollide((float)w,0.f,-1.f,0.f))
+					ball.resolveCollision((float)w,0.f,-1.f,0.f);	       
+				if(ball.doesCollide(0.f,0.f,1.f,0.f))
+					ball.resolveCollision(0.f,0.f,1.f,0.f);	        	
+				if(ball.doesCollide(0.f,(float)h,0.f,-1.f))
+					ball.resolveCollision(0.f,(float)h,0.f,-1.f);	        	
+				if(ball.doesCollide(0.f,0.f,0.f,1.f))
+					ball.resolveCollision(0.f,0.f,0.f,1.f);
+			}
+
+			// Handle collision of balls with each other.
+			// This will be done after they have moved, and after collision
+			// with walls (or leaving the field alltogether) will have been
+			// handled.
+			// This should allow to not have to worry about negative coordinates.
+			// Not really a hash table - more like smart usage of multidimensional array structure.
+			LinkedList<Ball>[][] hashTable = generateHashTable(balls.iterator());
+
+			for (Ball ball : balls) {
+				handleCollision(ball, hashTable);
+			}
+
+			// Trigger update of display.
 			repaint();
-			
+
 			// Print time per simulation step.
 			c++;
-			if(c==10)
-			{
+			if(c==10) {
 				System.out.printf("Timer per simulation step: %fms\n", (float)timer.timeElapsed()/(float)c);
 				timer.reset();
 				c = 0;
+			}
+
+			try {
+				Thread.sleep(3);
+			} catch (InterruptedException e) {
 			}
 		}
 	}
@@ -154,7 +153,7 @@ public class BouncingBallsSimulation extends Component implements Runnable {
 
 		//System.out.printf("Offset: x = %d, y = %d\n", offsetX, offsetY);
 		for (Integer[] neighbourCoordinate : neighbouringFields) {
-			//System.out.printf("Neighbour: x = %d, y = %d\n", neighbour[0], neighbour[1]);
+			//System.out.printf("Neighbour: x = %d, y = %d\n", neighbourCoordinate[0], neighbourCoordinate[1]);
 			int neighbourX = neighbourCoordinate[0];
 			int neighbourY = neighbourCoordinate[1];
 			for (Ball neighbour : hashTable[neighbourX][neighbourY]) {
@@ -168,14 +167,14 @@ public class BouncingBallsSimulation extends Component implements Runnable {
 	}
 
 	/** 
-	 * Returns list of field's neighbours in hash-table - excluding field itself. 
+	 * Returns list of field's neighbours in hash-table - including field itself. 
 	 */
 	private ArrayList<Integer[]> getNeighbouringFields(int offsetX, int offsetY) {
 		ArrayList<Integer[]> out = new ArrayList<Integer[]>();
 
 		for (int x = offsetX - 1; x <= offsetX + 1; x++) {
 			for (int y = offsetY - 1; y <= offsetY + 1; y++) {
-				if (!(x < 0 || x > HASH_TABLE_SIZE || y < 0 || y > HASH_TABLE_SIZE || (x == offsetX && y == offsetY))) {
+				if (!(x < 0 || x > HASH_TABLE_SIZE || y < 0 || y > HASH_TABLE_SIZE)) {
 					out.add(new Integer[]{ x, y });
 				}
 			}
