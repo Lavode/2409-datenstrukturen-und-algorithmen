@@ -344,6 +344,56 @@ Average lookup cost with this pattern will be $(1 + 1 + 2 + 3) / 4 = 1.5$.
 Clearly, quadratic probing - due to influencing the hash usage pattern - will
 cause average lookup cost to vary, depending on the order of values it inserts.
 
-. Clearly hash usage will vary depending 
+\section{Practical part}
+
+\subsection{Time measurements}
+
+Runtime of collision detection, for various input sizes and hash table sizes,
+was measured, the results of which are visualized below.
+
+For input sizes above 100 items - where naive $O(n^2)$ collision handling would
+perform best - best measurements were achived with a hash table of size 80x80,
+that is, containing 6400 items. With this size - assuming a uniform
+distribution of balls in the field - the number of collision detections needed
+per ball will be in the single digits.
+
+Past this size, performance will degrade. This is likely caused by two factors
+- array creation (especially memory assignment) scaling linearly with the size
+of the hash table, and number of saved comparisons compared to smaller hash
+table sizes going towards zero.
+
+As such it is expected that, with substantially bigger input sizes, the ideal
+hash table size would be bigger - likely big enough to only have to do a few
+collision detections per ball.
+
+\subsubsection{Danger of too big hash tables}
+
+It should be noted that the given implementation has a serious downside. As it
+only checks for collisions in the 8 fields surrounding a ball's own field, plus
+the field it is in itself, the area (measured in pixels) it checks for
+collisions depends on the size of the hash table.
+
+Namely, with a window width and height of $x$ (in pixels), and a hash table
+size of $n$, each 'square' of the hash table will have a width and height of
+$\frac{x}{n}$. As such, collision detection will check for potential collisions
+in a square of $(3 * \frac{x}{n})^2$ around each ball.
+
+Therefore, if the size of the hash table increases, the area covered by the 3x3
+neighbourhood decreases - down to a point where two neighbouring balls - in
+spite of colliding with each other - are not in neighbouring squares anymore.
+This would lead to collision detection failing.
+
+In our example - with a window measuring 1000x1000px, and a hash table
+measuring 80x80 squares, each 9x9 area will cover an area of 37.5x37.5px. This
+ought to be big enough that - with each ball having a diameter of 8px - very
+few, if any, collisions go undetected.
+
+\begin{figure}
+	\centering
+	\caption{Runtime of collision detection}
+	\includegraphics[width=\linewidth]{resources/collision_detection.png}
+\end{figure}
+
+\FloatBarrier
 
 \end{document}
