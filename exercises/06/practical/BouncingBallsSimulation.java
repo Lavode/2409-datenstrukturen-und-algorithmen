@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class BouncingBallsSimulation extends Component implements Runnable {
 
-	final int HASH_TABLE_SIZE = 50;
+	final int HASH_TABLE_SIZE = 640;
 
 	LinkedList<Ball> balls;	// List of balls.
 	Image img;				// Image to display balls.
@@ -134,21 +134,22 @@ public class BouncingBallsSimulation extends Component implements Runnable {
 			c++;
 			if(c==10) {
 				System.out.printf("Timer per simulation step: %fms\n", (float)timer.timeElapsed()/(float)c);
+				System.out.flush();
 				timer.reset();
 				c = 0;
 			}
 
-			try {
-				Thread.sleep(3);
-			} catch (InterruptedException e) {
-			}
+			// Optional slowdown to be able to observe collisions.
+			// try {
+			// 	Thread.sleep(3);
+			// } catch (InterruptedException e) {
+			// }
 		}
 	}
 
 	private void handleCollision(Ball ball, LinkedList<Ball>[][] hashTable) {
 		int offsetX = hashTableXOffset(ball);
 		int offsetY = hashTableYOffset(ball);
-
 		ArrayList<Integer[]> neighbouringFields = getNeighbouringFields(offsetX, offsetY);
 
 		//System.out.printf("Offset: x = %d, y = %d\n", offsetX, offsetY);
