@@ -344,6 +344,89 @@ Average lookup cost with this pattern will be $(1 + 1 + 2 + 3) / 4 = 1.5$.
 Clearly, quadratic probing - due to influencing the hash usage pattern - will
 cause average lookup cost to vary, depending on the order of values it inserts.
 
+\section{Collision handling with free-list}
+
+As shown below, the free-list has to be doubly-linked, to faciliate
+constant-time removal of arbitrary items from it.
+
+\subsection{Searching}
+
+Searching is straight-forward. Let A be the element we are searching for, and B
+the position it is hashed to.
+
+\begin{itemize}
+	\item If element at position B equals A, we have found A
+	\item Otherwise, follow the list of sucessors. If we find A, return
+		A. If we hit the end of the list, A is not in the hash table.
+\end{itemize}
+
+\subsection{Insertion}
+
+Let A be the item we insert, and B the position within the array to which it is
+hashed. We differentiate between two cases - B is free, and B is already
+occupied by another element.
+
+\subsubsection{B is free}
+
+\begin{itemize}
+	\item Remove B from free-list (can be done in constant time with
+		doubly-linked lists)
+	\item Insert A at position B.
+\end{itemize}
+
+\subsubsection{B is occupied}
+
+Let C be the item which occupies B. We differentiate between two cases - C
+hashes to B too, or C does not hash to B.
+
+If C is hashed to B:
+\begin{itemize}
+	\item Remove empty item 'D' from free-list (eg at head or tail)
+	\item Insert A at position D.
+	\item Link end of chain which 'B' is part of to 'D'
+\end{itemize}
+
+If C is not hashed to B, ie if C is just part of a chain, hashed to another
+value, which happened to use position B to store one of its items:
+\begin{itemize}
+	\item Remove empty item 'D' from free-list (eg at head or tail)
+	\item Move C to position D.
+	\item Link C's predecessor (which is known due to traversing the chain) to D.
+	\item Insert at position B.
+\end{itemize}
+
+\subsection{Deletion}
+
+Let A be the element we want to delete, let B be the position it is hashed to.
+We differentiate between two cases - A is the only element hashed to B
+(indicated by its successor pointer being empty), and A is one of many elements
+hashed to B.
+
+\subsubsection{A is sole element}
+
+\begin{itemize}
+	\item Delete A
+	\item Link position B to head (or tail) of free-list
+\end{itemize}
+
+\subsubsection{A is one of many elements}
+
+If A is at the head of the list:
+\begin{itemize}
+	\item Let C be A's successor
+	\item Copy C successor to position B (efectively overwriting A)
+	\item Delete C at old position
+	\item Add C's position to head (or tail) of free-list
+\end{itemize}
+
+If A is not at the head of the list:
+\begin{itemize}
+	\item Let C be A's predecessor
+	\item Let D be A's successor (if any)
+	\item Set C's sucessor to D
+	\item Delete A, link A's position to head (or tail) of free-list
+\end{itemize}
+
 \section{Practical part}
 
 \subsection{Time measurements}
@@ -365,6 +448,11 @@ table sizes going towards zero.
 As such it is expected that, with substantially bigger input sizes, the ideal
 hash table size would be bigger - likely big enough to only have to do a few
 collision detections per ball.
+
+The current implementation could be substantially optimized by not rebuilding
+the whole hash table in each iteration. Instead it would be possible to reuse
+the structure from the previous iteration, moving only those balls which have
+entered a new square.
 
 \subsubsection{Danger of too big hash tables}
 
