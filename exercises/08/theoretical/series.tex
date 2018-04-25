@@ -1,0 +1,188 @@
+\documentclass[a4paper]{scrartcl}
+%\documentclass[a4paper]{report}
+
+% Uncomment to optimize for double-sided printing.
+% \KOMAoptions{twoside}
+
+% Set binding correction manually, if known.
+% \KOMAoptions{BCOR=2cm}
+
+% Localization options
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Enhanced verbatim sections. We're mainly interested in
+% \verbatiminput though.
+\usepackage{verbatim}
+
+% PDF-compatible landscape mode.
+% Makes PDF viewers show the page rotated by 90°.
+\usepackage{pdflscape}
+
+% Advanced tables
+\usepackage{tabu}
+\usepackage{longtable}
+
+% Fancy tablerules
+\usepackage{booktabs}
+
+% Graphics
+\usepackage{graphicx}
+
+% Current time
+\usepackage[useregional=numeric]{datetime2}
+
+% Float barriers.
+% Automatically add a FloatBarrier to each \section
+\usepackage[section]{placeins}
+
+% Custom header and footer
+% \usepackage{fancyhdr}
+% \setlength{\headheight}{15.2pt}
+% \pagestyle{fancyplain}
+
+\usepackage{geometry}
+\usepackage{layout}
+
+\usepackage{subcaption}
+
+% Math tools
+\usepackage{mathtools}
+% Math symbols
+\usepackage{amsmath,amsfonts,amssymb}
+
+% \fancyhf{}
+% % Chapter header on non-plain pages only.
+% \lhead{\fancyplain{} {\leftmark}}
+% % Footer must contain print date. Ugly, but IPA requirement.
+% \lfoot{\printdate}
+% % Print date left and page count right was the thing which looked the
+% % most balanced.
+% \rfoot{\thepage}
+% 
+% Source code & highlighting
+\usepackage{listings}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+
+% Convenience commands
+\newcommand{\mailsubject}{2409 - Datenstrukturen und Algorithmen - Series 8}
+\newcommand{\maillink}[1]{\href{mailto:#1?subject=\mailsubject}
+                               {#1}}
+
+% Should use this command wherever the print date is mentioned.
+\newcommand{\printdate}{\today}
+
+\subject{2409 - Datenstrukturen und Algorithmen}
+\title{Series 8}
+
+\author{Michael Senn - 16-126-880}
+
+\date{}
+
+% Needs to be the last command in the preamble, for one reason or
+% another. 
+\usepackage{hyperref}
+
+
+\begin{document}
+\maketitle
+
+\section{Relaxed red-black tree}
+
+Changing the previously-red root node of a relaxed red-black tree to black will
+result in a regular red-black tree, with all requirements fulfilled.
+
+This can be shown by looking at the five properties of a red-black tree.
+
+\begin{itemize}
+	\item Every node is either red or black: Not affected by change.
+	\item Root node is black: Fulfilled by change.
+	\item Every leaf is black: Not affected by change.
+	\item Red nodes have black children: Not affected by change, as no requirement for black nodes.
+	\item Black height of one node to all its children is equal: Not affected by change, as node itself not counted for black height.
+\end{itemize}
+
+
+\section{Path lenghts}
+
+In order to show that the longest path from a node to any of its leaves is, at
+most, twice as long as the shortest path from the same node to any of its
+leaves, we look at how these paths are made up.
+
+Due to property five, the black-height of both paths - meaning the number of
+black nodes in each path - will be equal. As such, it is clear that the
+shortest path will consist of solely black nodes, wheras the longest path will
+contain as many red nodes as possible.
+
+Due to property four, however, the longest path can not consist of more than
+$\frac{1}{2}$ red nodes, as each red node has to be followed by a black one.
+
+As such, the length of the shortest path will be $bh(n)$, and the length of the
+longest path $bh(n) + rh(n)$, with $rh(n) \leq bh(n)$. As such, the longest
+path will be at most twice as long as the shortest one.
+
+\section{Inner nodes}
+
+Following up from the previous exercise, a tree with minimum number of inner
+nodes - that is nodes excluding leaf nodes - will consist of solely black
+nodes. As such, such a tree will consist of $2^{bh(root)} - 1$ inner nodes.
+
+Similarly, a tree with maximum number of inner nodes will contain of solely
+longest paths, with equal amounts of red and black nodes, for a total of $2^{2
+* bh(root)} - 1$ inner nodes.
+
+\section{Right-Rotate}
+
+Based on the left-rotate algorithm presented in the lecture.
+
+\begin{lstlisting}
+right_rotate(T, x):
+  y = x.left
+  x.left = y.right
+
+  if y.right != T.nil:
+    y.right.p = x
+  y.p = x.p
+
+  if x.p == T.nil:
+    T.root = y
+  elsif x == x.p.right:
+    x.p.right = y
+  else:
+    x.p.right = y
+
+  y.right = x
+  x.p = y
+\end{lstlisting}
+
+\section{Transforming binary trees}
+
+Each binary tree can be transformed into a right-leaning chain by applying a
+right-rotation to all nodes with a left child. As each of these right-rotations
+will increase the number of nodes in the right chain by one, there are at most
+$n-1$ rotations needed to transform the tree into a right-leaning chain.
+
+Afterwards, any number of left-rotations can be applied to create a new tree
+structure, with the original tree resulting if as many left-rotations are
+applied, as right-rotations were applied previously.
+
+As such, any binary tree can be transformed into another by a sequence of
+right-rotations, followed by a sequence of left-rotations, with an upper bound
+of $O(n)$.
+
+\section{Manual tree building}
+
+Handed in on paper.
+
+\section{Effect of transformations on black-length}
+
+Handed in on paper.
+
+\section{Effect of insertion and subsequent deletion on structure}
+
+Handed in on paper.
+
+\end{document}
