@@ -1,0 +1,208 @@
+\documentclass[a4paper]{scrartcl}
+%\documentclass[a4paper]{report}
+
+% Uncomment to optimize for double-sided printing.
+% \KOMAoptions{twoside}
+
+% Set binding correction manually, if known.
+% \KOMAoptions{BCOR=2cm}
+
+% Localization options
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Enhanced verbatim sections. We're mainly interested in
+% \verbatiminput though.
+\usepackage{verbatim}
+
+% PDF-compatible landscape mode.
+% Makes PDF viewers show the page rotated by 90°.
+\usepackage{pdflscape}
+
+% Advanced tables
+\usepackage{tabu}
+\usepackage{longtable}
+
+% Fancy tablerules
+\usepackage{booktabs}
+
+% Graphics
+\usepackage{graphicx}
+
+% Current time
+\usepackage[useregional=numeric]{datetime2}
+
+% Float barriers.
+% Automatically add a FloatBarrier to each \section
+\usepackage[section]{placeins}
+
+% Custom header and footer
+% \usepackage{fancyhdr}
+% \setlength{\headheight}{15.2pt}
+% \pagestyle{fancyplain}
+
+\usepackage{geometry}
+\usepackage{layout}
+
+\usepackage{subcaption}
+
+% Math tools
+\usepackage{mathtools}
+% Math symbols
+\usepackage{amsmath,amsfonts,amssymb}
+
+% \fancyhf{}
+% % Chapter header on non-plain pages only.
+% \lhead{\fancyplain{} {\leftmark}}
+% % Footer must contain print date. Ugly, but IPA requirement.
+% \lfoot{\printdate}
+% % Print date left and page count right was the thing which looked the
+% % most balanced.
+% \rfoot{\thepage}
+% 
+% Source code & highlighting
+\usepackage{listings}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+
+% Convenience commands
+\newcommand{\mailsubject}{2409 - Datenstrukturen und Algorithmen - Series 10}
+\newcommand{\maillink}[1]{\href{mailto:#1?subject=\mailsubject}
+                               {#1}}
+
+% Should use this command wherever the print date is mentioned.
+\newcommand{\printdate}{\today}
+
+\subject{2409 - Datenstrukturen und Algorithmen}
+\title{Series 10}
+
+\author{Michael Senn - 16-126-880}
+
+\date{}
+
+% Needs to be the last command in the preamble, for one reason or
+% another. 
+\usepackage{hyperref}
+
+
+\begin{document}
+\maketitle
+
+\section{Greedy Algorithms - Activity planning}
+
+Handed in on paper.
+
+\section{Huffman Coding}
+
+Handed in on paper.
+
+\section{Change-making}
+
+\subsection{Greedy algorithm}
+
+We define the following naive algorithm
+
+\begin{itemize}
+	\item Let $A$ be empty array.
+	\item Let $amount$  be amount of change which to hand out.
+	\item While $amount \neq 0$
+		\begin{itemize}
+			\item Let $c$ be coin with biggest denomination so $c \leq amount$
+			\item Append $c$ to $A$
+			\item $amount := amount - c$
+		\end{itemize}
+	\item Return $A$
+\end{itemize}
+
+In words - starting with the biggest denomination, use as many of that coin as
+possible, then move on to the next smaller denomination. Continue until
+requested amount is met.
+
+\subsubsection{Optimal substructure}
+
+We intend to show that an optimal solution for a given problem also contains
+optimal solutions for its subproblems.
+
+Let $a$ be the amount for which to hand out change, let $f(a)$ be the number of coins
+of the ideal solution for amount $a$.
+
+Assume $x = f(a)$ for a given $a$. Further assume that there exists a coin $c$
+in the optimal solution.
+
+This implies that the given solution for amount $a$ also contains a solution -
+with $x - 1$ coins - for amount $a - c$.
+
+If this solution to the subproblem were not optimal, then there would exist a
+solution - with $y < x - 1$ coins - for amount $a - c$. This would, however,
+imply that there would also exist a solution with $z < x$ coins for amount $a$.
+
+As this is a contradiction to the original assumption, we have shown that the
+problem has an optimal substructure.
+
+\subsubsection{Greedy choice property}
+
+By differentiating the following four cases, we can show that - in any step of
+the iteration - the coin picked by our algorithm will be part of the ideal
+solution.
+
+Let $amount$ be the amount of change which to hand out.
+
+\begin{description}
+	\item[$amount \geq 25$] The optimal solution is guaranteed to cointain at least one coin with denomination $25$.
+	\item[$25 > amount \geq 10$] The optimal solution is guaranteed to contain 1 -- 2 coins with denomination $10$.
+	\item[$10 > amount \geq 5$] The optimal solution is guaranteed to contain exactly one coin with denomination $5$.
+	\item[$5 > amount \geq 1$] The optimal solution is guaranteed to contain 1 -- 4 coins with denomination $1$.
+\end{description}
+
+As such, the choice our algorithm makes is guaranteed to be part of the optimal
+solution.
+
+\subsection{Coin systems where greedy algorithm fails}
+
+One example, where our greedy algorithm fails to produce the optimal solution
+is the following:
+
+Let our coin system cointain the following denominations: $N = (1, 3, 4, 5)$
+
+When trying to find optimal change for $n = 7$ cents, the algorithm would come up
+with $(5, 1, 1)$, whereas the optimal solution would be $(4, 3)$.
+
+The same issue will arise with eg $N = (25, 10, 1)$, $n = 40$.
+
+\subsection{Change-making via dynamic programming}
+
+Let $N = (c_1, c_2, \dots, c_k)$ be our coins.
+
+We define the list containing number of coins in the optimal solution as follows:
+\[
+	c(j) = 
+	\begin{cases} 
+		\infty & j < 0  \\
+		0 & j = 0 \\
+		\min_{x \in \{1, 2, \dots, k\}} 1 + c(j - c_x) & \text{else}
+	\end{cases}
+\]
+
+At the same time we use $denom(j)$ to keep track of the denomination of a coin
+used to create the ideal solution for amount $j$. This can be tracked easily
+within implementations generating the table above, by setting $denom(j) = c_j$
+for those cases where we set $c(j) = 1 + c(j - c_x)$, ie those cases where a
+better solution is found when considering an additional coin.
+
+These two lists can be created with a time-complexity of $\theta(n * k)$.
+
+Having created those two lists, calculating the optimal solution for a given
+amount $n$ is as easy as looking at $denom(n)$, adding said coin to our
+solution, setting $n = n - denom(n)$, and repeating while $n > 0$.
+
+Illustrating the above as a recursive function:
+\begin{lstlisting}
+	change(j, denom):
+	  if j > 0:
+	    return [denom[j]] + change(j - denom[j], denom)
+\end{lstlisting}
+
+
+\end{document}
